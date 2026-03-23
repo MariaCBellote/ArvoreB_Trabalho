@@ -1,6 +1,13 @@
 #include "ArvoreB.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+//split
+//destruir
+//sair
+//gravar
+
 
 No *criarNo() {
     No *novo = (No*) malloc(sizeof(No));
@@ -18,7 +25,7 @@ ArvB criarArvore(){
     return criarNo();
 }
 
-int buscarNaArvore(ArvB B, int matricula){
+long buscarNaArvore(ArvB B, int matricula){
     if (B == NULL) return -1; // caso a arvore n exista
 
     int i =0;
@@ -28,6 +35,7 @@ int buscarNaArvore(ArvB B, int matricula){
     }
 
     if(i<B->n && matricula == B->chaves[i].matricula){
+
         return B->chaves[i].offset;
     }
 
@@ -36,12 +44,60 @@ int buscarNaArvore(ArvB B, int matricula){
         return -1;
     }
 
-    return buscar(B->filhos[i], matricula);
+    return buscarNaArvore(B->filhos[i], matricula);
 }
 
-void Pesquisar (ArvB B, int matricula){
-    long posicao = buscarNaArvore(B,matricula);
-    //buscar no arquivo
+void PesquisarNoArquivo(buscarNaArvore(ArvB B, int matricula) pos){
+    FILE *f =fopen("Registro.txt","r");
+    if(f==NULL){
+        printf("Falha ao abrir o arquivo!");
+        return;
+    }
+
+    fseek(f,pos,SEEK_SET);
+    char linha [200];
+
+    fgets(linha, sizeof(linha), f);
+
+    printf("Registro: %s.", linha);
+
+    fclose(f);
+
+}
+
+
+long, int cadastrar(){
+    string nome;
+    int matricula;
+    string telefone;
+    
+    printf("Digite seu nome: ");
+    nome =scanf("%[^\n]",nome);
+    printf("Digite sua matricula: ");
+    matricula= scanf("%d", &matricula);
+    printf("Digite seu telefone: ");
+    telefone =scanf("%[^\n]",telefone);
+
+    FILE *f =fopen("Registro.txt","a+");
+    fseek(f,0,SEEK_END);
+    long pos= ftell(f);
+
+    fprintf(f,"%d;%s;%s", matricula, nome,telefone);
+    fclose(f);
+
+    return pos, matricula;
+
+
+}
+
+
+
+
+void gravarEmArquivo(){
+
+}
+
+void sair(){
 
 }
 
@@ -72,7 +128,7 @@ void inserirNaoCheio(No *no, int matri, long posicao) {
         while (i >= 0 && matri < no->chaves[i].matricula) {
             no->chaves[i+1] = no->chaves[i];
             i--;
-        }
+        }  
 
         no->chaves[i+1].matricula = matri;
         no->chaves[i+1].offset = posicao;
@@ -97,21 +153,27 @@ void inserirNaoCheio(No *no, int matri, long posicao) {
             }
         }
    }
-   inserirNaoCheio(B->filhos[i], matri, offset );
+   inserirNaoCheio(B->filhos[i], matri, posicao );
 }
 
-ArvB inserirArv(ArvB B, int matri, int posicao){
+ArvB inserirArv(ArvB B){
+
+    long pos;
+    int matricula;
+
+    pos, matricula= cadastrar();
+
    //caso nula
    if(B==NULL){
     B= criarNo();
-    B->chaves[0].matricula = matri;
-    B->chaves[0].offset= posicao;
+    B->chaves[0].matricula = matricula;
+    B->chaves[0].offset= pos;
     B->n =1;
     return B;
     
    }
    //no cheio
-   if(b->n == M){
+   if(B->n == M){
     //cria nova raiz que será pai dos splitados
     No *novaRaiz= criarNo();
     novaRaiz->folha = 0;
@@ -119,15 +181,18 @@ ArvB inserirArv(ArvB B, int matri, int posicao){
      //split
      split(novaRaiz,0,B);
 
-     inserirNaoCheio(novaRaiz, matri, posicao);
+     inserirNaoCheio(novaRaiz, matricula, pos);
 
         return novaRaiz;
    }
    
    // caso no tenha espaço
-   inserirNaoCheio(B, matri, posicao);
+   inserirNaoCheio(B, matricula, pos);
    return B;
      
   
 }
 
+void destroiArvore(ArvB B){
+ 
+}
