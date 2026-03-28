@@ -4,10 +4,46 @@
 #include <string.h>
 
 //split
-//destruir
-//sair
-//gravar
+  
 
+
+void gravarEmArquivo(ArvB B){
+    FILE *f = fopen("Gravados.txt", "w");
+
+    if (f == NULL){
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    // escreve endereço da raiz
+    fprintf(f, "Raiz: %p\n", B);
+
+    // percorre a árvore
+    gravarNos(B, f);
+
+    fclose(f);
+}
+
+void gravarNos(No *B, FILE *f){
+    if (B == NULL) return;
+
+    // escreve o nó atual
+    fprintf(f, "%p | n=%d | folha=%d | chaves: ",
+            B, B->n, B->folha);
+
+    for (int i = 0; i < B->n; i++){
+        fprintf(f, "%d ", B->chaves[i].matricula);
+    }
+
+    fprintf(f, "\n");
+
+    // percorre filhos
+    if (!B->folha){
+        for (int i = 0; i <= B->n; i++){
+            gravarNos(B->filhos[i], f);
+        }
+    }
+}
 
 No *criarNo() {
     No *novo = (No*) malloc(sizeof(No));
@@ -47,57 +83,67 @@ long buscarNaArvore(ArvB B, int matricula){
     return buscarNaArvore(B->filhos[i], matricula);
 }
 
-void PesquisarNoArquivo(buscarNaArvore(ArvB B, int matricula) pos){
-    FILE *f =fopen("Registro.txt","r");
-    if(f==NULL){
-        printf("Falha ao abrir o arquivo!");
+void PesquisarNoArquivo(ArvB B, int matricula){
+    
+    long pos = buscarNaArvore(B, matricula);
+
+    if (pos == -1){
+        printf("Registro nao encontrado!\n");
         return;
     }
 
-    fseek(f,pos,SEEK_SET);
-    char linha [200];
+    FILE *f = fopen("Registro.txt","r");
+    if(f == NULL){
+        printf("Falha ao abrir o arquivo!\n");
+        return;
+    }
 
+    fseek(f, pos, SEEK_SET);
+
+    char linha[200];
     fgets(linha, sizeof(linha), f);
 
-    printf("Registro: %s.", linha);
+    printf("Registro: %s", linha);
 
     fclose(f);
-
 }
 
 
-long, int cadastrar(){
-    string nome;
-    int matricula;
-    string telefone;
-    
+//long, int cadastrar() - não existe em c
+long cadastrar(int *matricula){
+    char nome[100];
+    char telefone[50];
+
     printf("Digite seu nome: ");
-    nome =scanf("%[^\n]",nome);
+    scanf(" %[^\n]", nome);
+
     printf("Digite sua matricula: ");
-    matricula= scanf("%d", &matricula);
+    scanf("%d", matricula);
+
     printf("Digite seu telefone: ");
-    telefone =scanf("%[^\n]",telefone);
+    scanf(" %[^\n]", telefone);
 
-    FILE *f =fopen("Registro.txt","a+");
-    fseek(f,0,SEEK_END);
-    long pos= ftell(f);
+    FILE *f = fopen("Registro.txt", "a+");
+    if (f == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return -1;
+    }
 
-    fprintf(f,"%d;%s;%s", matricula, nome,telefone);
+    fseek(f, 0, SEEK_END);
+    long pos = ftell(f);
+
+    fprintf(f, "%d;%s;%s\n", *matricula, nome, telefone);
+
     fclose(f);
 
-    return pos, matricula;
-
-
+    return pos;
 }
 
 
-
-
-void gravarEmArquivo(){
-
-}
-
-void sair(){
+void sair(Arv B){
+    destroiArvore(B);
+    printf("Memoria liberada. Encerrando programa.\n");
+    exit(0);
 
 }
 
@@ -109,7 +155,7 @@ No* buscarFolha(ArvB B,int matricula){
     }
 
     if(B->folha==1){
-        return *B;
+        return B;
     }
     return buscarFolha(B->filhos[i], matricula);
 
@@ -151,9 +197,10 @@ void inserirNaoCheio(No *no, int matri, long posicao) {
             if (matri > no->chaves[i].matricula) {
                 i++;
             }
-        }
+        } 
+        inserirNaoCheio(no->filhos[i], matri, posicao );
    }
-   inserirNaoCheio(B->filhos[i], matri, posicao );
+  
 }
 
 ArvB inserirArv(ArvB B){
@@ -194,5 +241,12 @@ ArvB inserirArv(ArvB B){
 }
 
 void destroiArvore(ArvB B){
- 
+ if (B == NULL) return;
+
+ if (!B->folha){
+    for (int i = 0; i <= B->n; i++){
+        destroiArvore(B->filhos[i]);
+    }
+}
+free(B);
 }
