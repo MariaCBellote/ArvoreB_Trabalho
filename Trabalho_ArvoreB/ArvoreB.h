@@ -1,9 +1,11 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#define F 3
-#define M 2
+#define M 3
+#define F (M+1)
+
 
 typedef struct chave {
 int matricula; // valor matricula
@@ -28,29 +30,21 @@ typedef No *ArvB;
 // criar arvore
 No *criarNo();
 
+// inserirNaoCheio, split e cadastrar
+ArvB inserirArv(ArvB B, char *arquivoRegistros); //retorna no
 
-// inserir 
-// busca saber aonde vai sempre folha
-// vazio? insere, se não acaba
-// se no tiver cheio:
-// insere
-// split* e promotion
-// adicionar ao offset
-ArvB inserirArv(ArvB B, int chave, int posicao); //?
+long buscarNaArvore(ArvB B, int matricula);//retorna offset
 
-// buscar pesquisar
-// busca nos
-// busca chaves partindo de nos 
-//
-int buscarNaArvore(ArvB B, int matricula);//Chave *buscar();
+// destruirArvore
+void sair(ArvB B); // encera aplicação
 
-// destruir arv
-void destroiArvore(ArvB B);
+// buscarNaArvore
+void PesquisarNoArquivo(ArvB B, int matricula, char *arquivoRegistros); // printa o registro 
 
+ArvB carregarArvore(char *arquivoRegistros);
 
-
-
-
+// gravarNos
+void gravarEmArquivo(ArvB B, char *arquivoArvore);
 
 
 

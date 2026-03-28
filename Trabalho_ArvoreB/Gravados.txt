@@ -1,0 +1,9 @@
+Raiz: 0x10271efe0
+0x10271efe0 | n=1 | folha=0 | chaves: 20 
+0x10271d940 | n=1 | folha=0 | chaves: 11 
+0x10271d8e0 | n=1 | folha=1 | chaves: 10 
+0x10271d9a0 | n=1 | folha=1 | chaves: 12 
+0x10271f040 | n=2 | folha=0 | chaves: 30 40 
+0x10271ef20 | n=1 | folha=1 | chaves: 25 
+0x10271ef80 | n=1 | folha=1 | chaves: 35 
+0x10271f0a0 | n=2 | folha=1 | chaves: 45 50 
