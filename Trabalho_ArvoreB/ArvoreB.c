@@ -3,26 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* 
-NÃO PRECISA MAIS PORQUE NOSSO CODIGO JA CRIA A ARVORE QUANDO NÃO TIVER
-ArvB criarArvore(){
-    return criarNo();
-}
-
-NO FIM NÃO FOI PRECISO
-Busca recursivamente a folha onde a chave deve ser inserida
-No* buscarFolha(ArvB B,int matricula){
-     int i =0;
-    while(i<B->n && matricula > B->chaves[i].matricula){
-       i++;
-    }
-    if(B->folha==1){
-        return B;
-    }
-    return buscarFolha(B->filhos[i], matricula);
-
-}
-*/
 
 No *criarNo() {
     No *novo = (No*) malloc(sizeof(No));
@@ -34,23 +14,6 @@ No *criarNo() {
         novo->filhos[i] = NULL;
 
     return novo;
-}
-
-// Pega o arquivo Gravados e salva a raiz
-void gravarEmArquivo(ArvB B, char *arquivoArvore){
-    FILE *f = fopen(arquivoArvore, "w");
-
-    if (f == NULL){
-        printf("Erro ao abrir arquivo\n");
-        return;
-    }
-
-    // escreve endereço da raiz
-    fprintf(f, "Raiz: %p\n", B);
-
-    // percorre a árvore
-    gravarNos(B, f);
-    fclose(f);
 }
 
 // Depois do gravarEmArquivo() pecorre cada nó e salva em Gravados
@@ -74,6 +37,23 @@ void gravarNos(No *B, FILE *f){
             gravarNos(B->filhos[i], f);
         }
     }
+}
+
+// Pega o arquivo Gravados e salva a raiz
+void gravarEmArquivo(ArvB B, char *arquivoArvore){
+    FILE *f = fopen(arquivoArvore, "w");
+
+    if (f == NULL){
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    // escreve endereço da raiz
+    fprintf(f, "Raiz: %p\n", B);
+
+    // percorre a árvore
+    gravarNos(B, f);
+    fclose(f);
 }
 
 // Busca recursiva pecorrendo só na arvore com matricula
@@ -126,14 +106,6 @@ void PesquisarNoArquivo(ArvB B, int matricula, char *arquivoRegistros){
     fclose(f);
 }
 
-// Chama o destroiArvore() e encerra o programa
-void sair(ArvB B){
-    destroiArvore(B);
-    printf("Memoria liberada. Encerrando programa.\n");
-    exit(0);
-
-}
-
 // Apaga a arvore da memoria local
 void destroiArvore(ArvB B){
  if (B == NULL) return;
@@ -145,6 +117,15 @@ void destroiArvore(ArvB B){
 }
 free(B);
 }
+
+// Chama o destroiArvore() e encerra o programa
+void sair(ArvB B){
+    destroiArvore(B);
+    printf("Memoria liberada. Encerrando programa.\n");
+    exit(0);
+
+}
+
 
 // Usa um vetor temporario para separar o nó em dois
 void split(No *pai, int i, No *filho){
@@ -232,6 +213,35 @@ void inserirNaoCheio(No *no, int matri, long posicao) {
     }
 }
 
+// Recebe a matricula do inserirArv() e pefe nome e telefone para salvar em registro
+long cadastrar(int *matricula, char *arquivoRegistros){ // Retornar o offset
+    char nome[100];
+    char telefone[50];
+
+    printf("Digite seu nome: ");
+    scanf(" %[^\n]", nome);
+
+
+    printf("Digite seu telefone: ");
+    scanf(" %[^\n]", telefone);
+
+    FILE *f = fopen(arquivoRegistros, "a+");
+    if (f == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return -1;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long pos = ftell(f);
+
+    fprintf(f, "%d;%s;%s\n", *matricula, nome, telefone);
+
+    fclose(f);
+
+    return pos;
+}
+
+
 // Pede a matricula, chama cadastrar(), e chama split() ou salvar em direto com inserirNaoCheio()
 ArvB inserirArv(ArvB B, char *arquivoRegistros){
 
@@ -276,33 +286,6 @@ ArvB inserirArv(ArvB B, char *arquivoRegistros){
     return B;
 }
 
-// Recebe a matricula do inserirArv() e pefe nome e telefone para salvar em registro
-long cadastrar(int *matricula, char *arquivoRegistros){ // Retornar o offset
-    char nome[100];
-    char telefone[50];
-
-    printf("Digite seu nome: ");
-    scanf(" %[^\n]", nome);
-
-
-    printf("Digite seu telefone: ");
-    scanf(" %[^\n]", telefone);
-
-    FILE *f = fopen(arquivoRegistros, "a+");
-    if (f == NULL) {
-        printf("Erro ao abrir arquivo\n");
-        return -1;
-    }
-
-    fseek(f, 0, SEEK_END);
-    long pos = ftell(f);
-
-    fprintf(f, "%d;%s;%s\n", *matricula, nome, telefone);
-
-    fclose(f);
-
-    return pos;
-}
 
 // Inicia o porgrama com a arvore salva em Registro
 ArvB carregarArvore(char *arquivoRegistros){
